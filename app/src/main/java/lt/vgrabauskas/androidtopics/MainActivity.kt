@@ -38,6 +38,25 @@ class MainActivity : AppCompatActivity() {
 
         itemListView.adapter = adapter
 
+        setClickOpenItemDetails()
+
+    }
+
+    private fun setClickOpenItemDetails() {
+        itemListView.setOnItemClickListener { adapterView, view, position, l ->
+            val item: Item = adapterView.getItemAtPosition(position) as Item
+
+            val itemIntent = Intent(this, SecondActivity::class.java)
+            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_ID, item.id)
+            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_TEXT01, item.text01)
+            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_TEXT02, item.text02)
+            startActivity(itemIntent)
+        }
+    }
+    companion object{
+        const val MAIN_ACTIVITY_ITEM_ID = "lt.vgrabauskas.androidtopics_item_id"
+        const val MAIN_ACTIVITY_ITEM_TEXT01 = "lt.vgrabauskas.androidtopics_item_text01"
+        const val MAIN_ACTIVITY_ITEM_TEXT02 = "lt.vgrabauskas.androidtopics_item_text02"
     }
 
     private fun generateListOfItems(items: MutableList<Item>) {
