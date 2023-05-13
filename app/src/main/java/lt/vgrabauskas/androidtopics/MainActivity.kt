@@ -1,15 +1,13 @@
 package lt.vgrabauskas.androidtopics
 
+import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
-import timber.log.Timber
+import androidx.activity.result.contract.ActivityResultContracts
 
-class MainActivity : AppCompatActivity() {
-
+class MainActivity : ActivityLifecycles() {
 
     lateinit var openSecondActivityButton: Button
     lateinit var adapter: CustomAdapter
@@ -21,25 +19,49 @@ class MainActivity : AppCompatActivity() {
         openSecondActivityButton = findViewById(R.id.openSecondActivityButton)
         itemListView = findViewById(R.id.itemListView)
 
-        setClickOpenSecondActivity()
-
         val items = mutableListOf<Item>()
         generateListOfItems(items)
 
+        setUpListView()
+        updateAdapter(items)
+
+        setClickOpenItemDetails()
+        setClickOpenSecondActivity()
+    }
+
+    private fun generateListOfItems(items: MutableList<Item>) {
+        for (item in 1..10) {
+            items.add(
+                Item(
+                    item,
+                    "Text01_%04x".format(item),
+                    "Text02_%06x".format(item)
+                )
+            )
+        }
+    }
+
+    private fun setUpListView() {
         adapter = CustomAdapter(this)
+        itemListView.adapter = adapter
+    }
+
+    private fun updateAdapter(items: MutableList<Item>) {
         adapter.add(items)
         adapter.add(Item(101, "text01", "text02"))
         adapter.add(
-            Item(102, "text03", "text04"),
-            Item(103, "text05", "text06"),
-            Item(104, "text03", "text04"),
-            Item(105, "text05", "text06")
+            Item(102, "text01", "text02"),
+            Item(103, "text01", "text02"),
+            Item(104, "text01", "text02"),
+            Item(105, "text01", "text02"),
         )
+    }
 
-        itemListView.adapter = adapter
-
-        setClickOpenItemDetails()
-
+    private fun setClickOpenSecondActivity() {
+        openSecondActivityButton.setOnClickListener {
+//            startActivity(Intent(this, SecondActivity::class.java))
+            startActivityForResult.launch(Intent(this, SecondActivity::class.java))
+        }
     }
 
     private fun setClickOpenItemDetails() {
@@ -53,27 +75,28 @@ class MainActivity : AppCompatActivity() {
             startActivity(itemIntent)
         }
     }
-    companion object{
-        const val MAIN_ACTIVITY_ITEM_ID = "lt.vgrabauskas.androidtopics_item_id"
-        const val MAIN_ACTIVITY_ITEM_TEXT01 = "lt.vgrabauskas.androidtopics_item_text01"
-        const val MAIN_ACTIVITY_ITEM_TEXT02 = "lt.vgrabauskas.androidtopics_item_text02"
-    }
 
-    private fun generateListOfItems(items: MutableList<Item>) {
-        for (item in 1..10) {
-            items.add(
-                Item(
-                    item,
-                    "text01%04x".format(item),
-                    "text02%06x".format(item)
-                )
-            )
-        }
-    }
+    private val startActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            when (result.resultCode) {
+                Activity.RESULT_OK -> {
+                    val item = Item(
+                        id = result.data
+                            ?.getIntExtra(SecondActivity.SECOND_ACTIVITY_ITEM_ID, 0) ?: 0,
+                        text01 = result.data
+                            ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT01) ?: "",
+                        text02 = result.data
+                            ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT02) ?: ""
 
-    private fun setClickOpenSecondActivity() {
-        openSecondActivityButton.setOnClickListener {
-            startActivity(Intent(this, SecondActivity::class.java))
+                    )
+                    adapter.add(item)
+                }
+            }
         }
+
+    companion object {
+        const val MAIN_ACTIVITY_ITEM_ID = "package lt.vcs.androidtopics_item_id"
+        const val MAIN_ACTIVITY_ITEM_TEXT01 = "package lt.vcs.androidtopics_item_text01"
+        const val MAIN_ACTIVITY_ITEM_TEXT02 = "package lt.vcs.androidtopics_item_text02"
     }
 }
