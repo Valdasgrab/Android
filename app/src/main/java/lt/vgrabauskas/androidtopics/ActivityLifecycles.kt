@@ -41,6 +41,16 @@ open class ActivityLifecycles : AppCompatActivity() {
         timber("onRestart")
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        timber("onSaveInstanceState")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        timber("onRestoreInstanceState")
+    }
+
     open fun timber(actionName: String) {
         Timber.i(
             """

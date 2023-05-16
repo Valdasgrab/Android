@@ -21,14 +21,14 @@ class SecondActivity : ActivityLifecycles() {
         text02EditText = findViewById(R.id.text02EditText)
         closeButton = findViewById(R.id.closeButton)
 
-        if (savedInstanceState != null) {
-            with(savedInstanceState) {
-                idEditText.setText(getString(SECOND_ACTIVITY_ITEM_ID))
-                text01EditText.setText(getString(SECOND_ACTIVITY_ITEM_TEXT01))
-                text02EditText.setText(getString(SECOND_ACTIVITY_ITEM_TEXT02))
-            }
-        }
-
+//        if (savedInstanceState != null) {
+//            with(savedInstanceState) {
+//                idEditText.setText(getString(SECOND_ACTIVITY_ITEM_ID))
+//                text01EditText.setText(getString(SECOND_ACTIVITY_ITEM_TEXT01))
+//                text02EditText.setText(getString(SECOND_ACTIVITY_ITEM_TEXT02))
+//            }
+//        }
+//
         getIntentExtra()
 
         setClickListenerOfCloseButton()
@@ -41,6 +41,17 @@ class SecondActivity : ActivityLifecycles() {
             putString(SECOND_ACTIVITY_ITEM_TEXT02, text02EditText.text.toString())
         }
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState != null) {
+            with(savedInstanceState) {
+                idEditText.setText(getString(SECOND_ACTIVITY_ITEM_ID))
+                text01EditText.setText(getString(SECOND_ACTIVITY_ITEM_TEXT01))
+                text02EditText.setText(getString(SECOND_ACTIVITY_ITEM_TEXT02))
+            }
+        }
     }
 
     private fun getIntentExtra() {
