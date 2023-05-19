@@ -2,6 +2,7 @@ package lt.vgrabauskas.androidtopics
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -54,19 +55,24 @@ class SecondActivity : ActivityLifecycles() {
     }
 
     private fun getIntentExtra() {
-
-        var itemID: Int = intent.getIntExtra(MainActivity.MAIN_ACTIVITY_ITEM_ID, -1)
-        var itemText01 = intent.getStringExtra(MainActivity.MAIN_ACTIVITY_ITEM_TEXT01) ?: ""
-        var itemText02 = intent.getStringExtra(MainActivity.MAIN_ACTIVITY_ITEM_TEXT02) ?: ""
-
-        if (itemID >= 0) {
-            idEditText.setText(itemID.toString())
-            text01EditText.setText(itemText01)
-            text02EditText.setText(itemText02)
+        if (intent.hasExtra(MainActivity.MAIN_ACTIVITY_ITEM_ID)) {
+            var item: Item = getExtraFromParcelable(intent)
+            idEditText.setText(item.id.toString())
+            text01EditText.setText(item.text01)
+            text02EditText.setText(item.text02)
         } else {
             finishIntentStatus = SECOND_ACTIVITY_ITEM_INTENT_RETURN_NEW
         }
     }
+
+    private fun getExtraFromParcelable(result: Intent?) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            result?.getParcelableExtra(MainActivity.MAIN_ACTIVITY_ITEM_ID, Item::class.java)
+                ?: Item(0, "", "")
+        } else {
+            result?.getParcelableExtra(MainActivity.MAIN_ACTIVITY_ITEM_ID)
+                ?: Item(0, "", "")
+        }
 
     private fun setClickListenerOfCloseButton() {
         closeButton.setOnClickListener {

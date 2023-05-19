@@ -2,9 +2,11 @@ package lt.vgrabauskas.androidtopics
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ListView
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import lt.vgrabauskas.androidtopics.databinding.ActivityMainBinding
 
@@ -73,7 +75,8 @@ class MainActivity : ActivityLifecycles() {
 
     private fun setClickOpenSecondActivity() {
         binding.openSecondActivityButton.setOnClickListener {
-            startActivityForResult.launch(Intent(this, SecondActivity::class.java))
+//            startActivityForResult.launch(Intent(this, SecondActivity::class.java))
+
         }
     }
 
@@ -83,10 +86,7 @@ class MainActivity : ActivityLifecycles() {
             itemIndex = position
 
             val itemIntent = Intent(this, SecondActivity::class.java)
-            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_ID, item.id)
-            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_TEXT01, item.text01)
-            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_TEXT02, item.text02)
-
+            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_ID, item)
             startActivityForResult.launch(itemIntent)
         }
     }
@@ -95,27 +95,13 @@ class MainActivity : ActivityLifecycles() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             when (result.resultCode) {
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_NEW -> {
-                    val item = Item(
-                        id = result.data
-                            ?.getIntExtra(SecondActivity.SECOND_ACTIVITY_ITEM_ID, 0) ?: 0,
-                        text01 = result.data
-                            ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT01) ?: "",
-                        text02 = result.data
-                            ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT02) ?: ""
 
-                    )
+
+                    val item: Item = getExtraFromParcelable(result.data)
                     adapter.add(item)
                 }
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_UPDATE -> {
-                    val item = Item(
-                        id = result.data
-                            ?.getIntExtra(SecondActivity.SECOND_ACTIVITY_ITEM_ID, 0) ?: 0,
-                        text01 = result.data
-                            ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT01) ?: "",
-                        text02 = result.data
-                            ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT02) ?: ""
-
-                    )
+                    val item = getExtraFromParcelable(result.data)
                     if (itemIndex >= 0) {
                         adapter.update(itemIndex, item)
                     }
@@ -123,10 +109,22 @@ class MainActivity : ActivityLifecycles() {
             }
         }
 
+    private fun getExtraFromParcelable(result: Intent?) =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            result?.getParcelableExtra(MAIN_ACTIVITY_ITEM_ID, Item::class.java)
+                ?: Item(0, "", "")
+        } else {
+            result?.getParcelableExtra(MAIN_ACTIVITY_ITEM_ID)
+                ?: Item(0, "", "")
+        }
+
     companion object {
         const val MAIN_ACTIVITY_ITEM_ID = "package lt.vcs.androidtopics_item_id"
         const val MAIN_ACTIVITY_ITEM_TEXT01 = "package lt.vcs.androidtopics_item_text01"
         const val MAIN_ACTIVITY_ITEM_TEXT02 = "package lt.vcs.androidtopics_item_text02"
+        const val MAIN_ACTIVITY_ITEM_CREATION_DATE =
+            "package lt.vcs.androidtopics_item_creation_date"
+        const val MAIN_ACTIVITY_ITEM_UPDATE_DATE = "package lt.vcs.androidtopics_item_update_date"
         const val MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX =
             "package lt.vcs.androidtopics_save_instance_state_item_index"
     }
