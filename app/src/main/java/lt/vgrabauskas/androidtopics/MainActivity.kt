@@ -10,23 +10,16 @@ import lt.vgrabauskas.androidtopics.databinding.ActivityMainBinding
 
 class MainActivity : ActivityLifecycles() {
 
-    //    private lateinit var openSecondActivityButton: Button
-    private lateinit var adapter: CustomAdapter
 
-    //    private lateinit var itemListView: ListView
+    private lateinit var adapter: CustomAdapter
     private var itemIndex = -1
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-//        openSecondActivityButton = findViewById(R.id.openSecondActivityButton)
-//        itemListView = findViewById(R.id.itemListView)
 
         val items = mutableListOf<Item>()
         generateListOfItems(items)
@@ -36,6 +29,18 @@ class MainActivity : ActivityLifecycles() {
 
         setClickOpenItemDetails()
         setClickOpenSecondActivity()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        timber("$itemIndex")
+        outState.putInt(MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX, itemIndex)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        timber("$itemIndex")
+        itemIndex = savedInstanceState.getInt(MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX)
     }
 
     private fun generateListOfItems(items: MutableList<Item>) {
@@ -52,7 +57,6 @@ class MainActivity : ActivityLifecycles() {
 
     private fun setUpListView() {
         adapter = CustomAdapter(this)
-//        itemListView.adapter = adapter
         binding.itemListView.adapter = adapter
     }
 
@@ -68,9 +72,7 @@ class MainActivity : ActivityLifecycles() {
     }
 
     private fun setClickOpenSecondActivity() {
-//        openSecondActivityButton.setOnClickListener {
         binding.openSecondActivityButton.setOnClickListener {
-//            startActivity(Intent(this, SecondActivity::class.java))
             startActivityForResult.launch(Intent(this, SecondActivity::class.java))
         }
     }
@@ -85,7 +87,6 @@ class MainActivity : ActivityLifecycles() {
             itemIntent.putExtra(MAIN_ACTIVITY_ITEM_TEXT01, item.text01)
             itemIntent.putExtra(MAIN_ACTIVITY_ITEM_TEXT02, item.text02)
 
-//            startActivity(itemIntent)
             startActivityForResult.launch(itemIntent)
         }
     }
@@ -95,7 +96,8 @@ class MainActivity : ActivityLifecycles() {
             when (result.resultCode) {
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_NEW -> {
                     val item = Item(
-                        id = 111,
+                        id = result.data
+                            ?.getIntExtra(SecondActivity.SECOND_ACTIVITY_ITEM_ID, 0) ?: 0,
                         text01 = result.data
                             ?.getStringExtra(SecondActivity.SECOND_ACTIVITY_ITEM_TEXT01) ?: "",
                         text02 = result.data
@@ -125,5 +127,7 @@ class MainActivity : ActivityLifecycles() {
         const val MAIN_ACTIVITY_ITEM_ID = "package lt.vcs.androidtopics_item_id"
         const val MAIN_ACTIVITY_ITEM_TEXT01 = "package lt.vcs.androidtopics_item_text01"
         const val MAIN_ACTIVITY_ITEM_TEXT02 = "package lt.vcs.androidtopics_item_text02"
+        const val MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX =
+            "package lt.vcs.androidtopics_save_instance_state_item_index"
     }
 }
