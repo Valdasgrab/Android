@@ -13,12 +13,12 @@ class CustomAdapter(context: Context) : BaseAdapter() {
     private val inflater = LayoutInflater.from(context)
     private val list = mutableListOf<Item>()
 
-    var maxId: Int = if (list.isEmpty()){
+    fun getMaxId() = if (list.isEmpty()){
         -1
     } else {
         list.maxBy { item -> item.id }.id
     }
-        private set
+
 
     fun add(vararg item: Item) {
         list.addAll(item)
@@ -30,9 +30,14 @@ class CustomAdapter(context: Context) : BaseAdapter() {
         notifyDataSetChanged()
     }
 
-    fun update(index: Int, item: Item) {
-        list.set(index, item)
-        notifyDataSetChanged()
+    fun update(item: Item?) {
+        if (item != null) {
+            val index = list.indexOfFirst { it.id == item.id }
+            if (index >=0) {
+                list[index] = item
+                notifyDataSetChanged()
+            }
+        }
     }
 
     fun clear() {
@@ -64,11 +69,7 @@ class CustomAdapter(context: Context) : BaseAdapter() {
             binding = view.tag as ItemBinding
         }
 
-        binding.idTextView.text = list[position].id.toString()
-        binding.text01TextView.text = list[position].text01
-        binding.text02TextView.text = list[position].text02
-        binding.creationDateTextView.text = list[position].creationDate.toString()
-        binding.updateDateTextView.text = list[position].updateDate.toString()
+        binding.item = list[position]
 
         return view
     }

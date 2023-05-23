@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+    <data>
+        <variable
+            name="item"
+            type="lt.vgrabauskas.androidtopics.Item" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,14 +18,14 @@
             android:id="@+id/idTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="id" />
+            android:text="@{String.valueOf(item.id)}" />
 
         <TextView
             android:id="@+id/text01TextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:text="text01" />
+            android:text="@{item.text01}" />
     </LinearLayout>
 
     <TextView
@@ -28,21 +33,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="32dp"
-        android:text="text02" />
+        android:text="@{item.text02}" />
 
     <TextView
         android:id="@+id/creationDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="96dp"
-        android:text="creation date" />
+        android:text="@{item.creationDate.toString()}" />
 
-     <TextView
+    <TextView
         android:id="@+id/updateDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="96dp"
-        android:text="update date" />
+        android:text="@{item.updateDate.toString()}" />
 
 
-</LinearLayout>
+</layout>

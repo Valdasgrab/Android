@@ -1,5 +1,7 @@
 package lt.vgrabauskas.androidtopics
 
+
+
 import android.os.Parcelable
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -44,9 +46,7 @@ data class Item(
         private set
 
     @IgnoredOnParcel
-    var updateDate: LocalDateTime
+    val updateDate: LocalDateTime
         get() = this._updateDate
-        private set(value) {
-            this._updateDate = value
-        }
+
 }

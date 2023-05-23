@@ -33,17 +33,7 @@ class MainActivity : ActivityLifecycles() {
         setClickOpenSecondActivity()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        timber("$itemIndex")
-        outState.putInt(MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX, itemIndex)
-        super.onSaveInstanceState(outState)
-    }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        timber("$itemIndex")
-        itemIndex = savedInstanceState.getInt(MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX)
-    }
 
     private fun generateListOfItems(items: MutableList<Item>) {
         for (item in 1..10) {
@@ -75,57 +65,54 @@ class MainActivity : ActivityLifecycles() {
 
     private fun setClickOpenSecondActivity() {
         binding.openSecondActivityButton.setOnClickListener {
-//            startActivityForResult.launch(Intent(this, SecondActivity::class.java))
-
+            val intent = Intent(this, SecondActivity::class.java)
+            val id = adapter.getMaxId().inc()
+            intent.putExtra(MAIN_ACTIVITY_ITEM_INTENT_ID, id)
+            startActivityForResult.launch(intent)
         }
     }
 
     private fun setClickOpenItemDetails() {
         binding.itemListView.setOnItemClickListener { adapterView, view, position, l ->
             val item: Item = adapterView.getItemAtPosition(position) as Item
-            itemIndex = position
-
             val itemIntent = Intent(this, SecondActivity::class.java)
-            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_ID, item)
+            itemIntent.putExtra(MAIN_ACTIVITY_ITEM_INTENT_OBJECT, item)
             startActivityForResult.launch(itemIntent)
         }
     }
 
     private val startActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+            val item: Item?
+
             when (result.resultCode) {
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_NEW -> {
 
 
-                    val item: Item = getExtraFromParcelable(result.data)
-                    adapter.add(item)
+                    item = getExtraFromParcelable(result.data,
+                        SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_OBJECT)
+                    if (item != null) {
+                        adapter.add(item)
+                    }
+
                 }
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_UPDATE -> {
-                    val item = getExtraFromParcelable(result.data)
-                    if (itemIndex >= 0) {
-                        adapter.update(itemIndex, item)
+                    item = getExtraFromParcelable(
+                        result.data,
+                        SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_OBJECT
+                    )
+                    if (item != null) {
+                        adapter.add(item)
                     }
                 }
             }
         }
 
-    private fun getExtraFromParcelable(result: Intent?) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            result?.getParcelableExtra(MAIN_ACTIVITY_ITEM_ID, Item::class.java)
-                ?: Item(0, "", "")
-        } else {
-            result?.getParcelableExtra(MAIN_ACTIVITY_ITEM_ID)
-                ?: Item(0, "", "")
-        }
+
 
     companion object {
-        const val MAIN_ACTIVITY_ITEM_ID = "package lt.vcs.androidtopics_item_id"
-        const val MAIN_ACTIVITY_ITEM_TEXT01 = "package lt.vcs.androidtopics_item_text01"
-        const val MAIN_ACTIVITY_ITEM_TEXT02 = "package lt.vcs.androidtopics_item_text02"
-        const val MAIN_ACTIVITY_ITEM_CREATION_DATE =
-            "package lt.vcs.androidtopics_item_creation_date"
-        const val MAIN_ACTIVITY_ITEM_UPDATE_DATE = "package lt.vcs.androidtopics_item_update_date"
-        const val MAIN_ACTIVITY_SAVE_INSTANCE_STATE_ITEM_INDEX =
-            "package lt.vcs.androidtopics_save_instance_state_item_index"
+        const val MAIN_ACTIVITY_ITEM_INTENT_OBJECT = "package lt.vcs.androidtopics_item_intent_onject"
+        const val MAIN_ACTIVITY_ITEM_INTENT_ID = "package lt.vcs.androidtopics_item_intent_id"
     }
 }
