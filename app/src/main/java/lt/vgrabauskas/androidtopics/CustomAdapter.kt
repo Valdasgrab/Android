@@ -76,7 +76,7 @@ class CustomAdapter(context: Context) : BaseAdapter() {
 
     override fun getItem(position: Int): Any = list[position]
 
-    override fun getItemId(position: Int): Long = position.toLong()
+    override fun getItemId(position: Int) = position.toLong()
 
 
     override fun getCount() = list.size

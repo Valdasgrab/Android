@@ -22,8 +22,7 @@ data class Item(
     @IgnoredOnParcel
     var text01: String = ""
         get():String {
-            field = this._text01
-            return field
+            return _text01
         }
         set(value) {
             field = value

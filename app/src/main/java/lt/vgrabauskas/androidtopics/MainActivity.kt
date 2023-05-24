@@ -4,24 +4,25 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ListView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.databinding.DataBindingUtil
 import lt.vgrabauskas.androidtopics.databinding.ActivityMainBinding
 
 class MainActivity : ActivityLifecycles() {
 
 
     private lateinit var adapter: CustomAdapter
-    private var itemIndex = -1
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.mainActivity = this
 
         val items = mutableListOf<Item>()
         generateListOfItems(items)
@@ -30,13 +31,15 @@ class MainActivity : ActivityLifecycles() {
         updateAdapter(items)
 
         setClickOpenItemDetails()
-        setClickOpenSecondActivity()
     }
 
 
-
+    private fun setUpListView() {
+        adapter = CustomAdapter(this)
+        binding.itemListView.adapter = adapter
+    }
     private fun generateListOfItems(items: MutableList<Item>) {
-        for (item in 1..10) {
+        for (item in 1..2) {
             items.add(
                 Item(
                     item,
@@ -47,10 +50,7 @@ class MainActivity : ActivityLifecycles() {
         }
     }
 
-    private fun setUpListView() {
-        adapter = CustomAdapter(this)
-        binding.itemListView.adapter = adapter
-    }
+
 
     private fun updateAdapter(items: MutableList<Item>) {
         adapter.add(items)
@@ -63,20 +63,21 @@ class MainActivity : ActivityLifecycles() {
         )
     }
 
-    private fun setClickOpenSecondActivity() {
-        binding.openSecondActivityButton.setOnClickListener {
-            val intent = Intent(this, SecondActivity::class.java)
-            val id = adapter.getMaxId().inc()
-            intent.putExtra(MAIN_ACTIVITY_ITEM_INTENT_ID, id)
-            startActivityForResult.launch(intent)
-        }
+    fun onClickButtonOpenSecondActivity(view: View) {
+        val intent = Intent(this, SecondActivity::class.java)
+        val id = adapter.getMaxId().inc()
+        intent.putExtra(MAIN_ACTIVITY_ITEM_INTENT_ID, id)
+
+        startActivityForResult.launch(intent)
     }
 
     private fun setClickOpenItemDetails() {
         binding.itemListView.setOnItemClickListener { adapterView, view, position, l ->
             val item: Item = adapterView.getItemAtPosition(position) as Item
+
             val itemIntent = Intent(this, SecondActivity::class.java)
             itemIntent.putExtra(MAIN_ACTIVITY_ITEM_INTENT_OBJECT, item)
+
             startActivityForResult.launch(itemIntent)
         }
     }
@@ -88,23 +89,22 @@ class MainActivity : ActivityLifecycles() {
 
             when (result.resultCode) {
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_NEW -> {
+                    item = getExtraFromParcelable(
+                        result.data,
+                        SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_OBJECT
+                    )
 
-
-                    item = getExtraFromParcelable(result.data,
-                        SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_OBJECT)
                     if (item != null) {
                         adapter.add(item)
                     }
-
                 }
+
                 SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_UPDATE -> {
                     item = getExtraFromParcelable(
                         result.data,
                         SecondActivity.SECOND_ACTIVITY_ITEM_INTENT_RETURN_OBJECT
                     )
-                    if (item != null) {
-                        adapter.add(item)
-                    }
+                    adapter.update(item)
                 }
             }
         }
@@ -112,7 +112,7 @@ class MainActivity : ActivityLifecycles() {
 
 
     companion object {
-        const val MAIN_ACTIVITY_ITEM_INTENT_OBJECT = "package lt.vcs.androidtopics_item_intent_onject"
-        const val MAIN_ACTIVITY_ITEM_INTENT_ID = "package lt.vcs.androidtopics_item_intent_id"
+        const val MAIN_ACTIVITY_ITEM_INTENT_OBJECT = "package lt.vgrabauskas.androidtopics_item_intent_onject"
+        const val MAIN_ACTIVITY_ITEM_INTENT_ID = "package lt.vgrabauskas.androidtopics_item_intent_id"
     }
 }
