@@ -33,6 +33,7 @@ class MainActivity : ActivityLifecycles() {
         setClickOpenItemDetails()
 
         // Comments just for merging purpose: commit01
+        // code from dev branch
     }
 
 
