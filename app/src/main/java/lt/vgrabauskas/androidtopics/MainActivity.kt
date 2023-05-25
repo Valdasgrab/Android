@@ -31,6 +31,8 @@ class MainActivity : ActivityLifecycles() {
         updateAdapter(items)
 
         setClickOpenItemDetails()
+
+        // Comments just for merging purpose: commit01
         // code from dev branch
     }
 
