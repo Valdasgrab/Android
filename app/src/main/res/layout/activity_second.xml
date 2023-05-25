@@ -7,11 +7,11 @@
 
         <variable
             name="item"
-            type="lt.vgrabauskas.androidtopics.Item" />
+            type="lt.vgrabauskas.androidtopics.repository.Item" />
 
         <variable
             name="secondActivity"
-            type="lt.vgrabauskas.androidtopics.SecondActivity" />
+            type="lt.vgrabauskas.androidtopics.secondactivity.SecondActivity" />
     </data>
 
     <RelativeLayout

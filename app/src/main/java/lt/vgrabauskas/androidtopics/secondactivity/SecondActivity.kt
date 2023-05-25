@@ -1,25 +1,42 @@
-package lt.vgrabauskas.androidtopics
+package lt.vgrabauskas.androidtopics.secondactivity
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import lt.vgrabauskas.androidtopics.ActivityLifecycles
+import lt.vgrabauskas.androidtopics.R
 import lt.vgrabauskas.androidtopics.databinding.ActivitySecondBinding
+import lt.vgrabauskas.androidtopics.getExtraFromParcelable
+import lt.vgrabauskas.androidtopics.mainactivity.MainActivity
+import lt.vgrabauskas.androidtopics.mainactivity.MainActivityViewModel
+import lt.vgrabauskas.androidtopics.repository.Item
 
 class SecondActivity : ActivityLifecycles() {
 
     private lateinit var binding: ActivitySecondBinding
     private var finishIntentStatus = SECOND_ACTIVITY_ITEM_INTENT_RETURN_UPDATE
+    private val activityViewModel: SecondActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_second)
-        binding.item = getIntentExtra()
         binding.secondActivity = this
+        activityViewModel.itemLiveData.observe(
+            this,
+            Observer { item ->
+                binding.item = item
+            }
+        )
 
-        getIntentExtra()
+        activityViewModel.fetchItem(getIntentExtra())
+
+
+
         // Comments just for merging purpose: commit02
     }
 
@@ -39,24 +56,8 @@ class SecondActivity : ActivityLifecycles() {
         }
     }
 
-    private fun getIntentExtra(): Item {
-        if (intent.hasExtra(MainActivity.MAIN_ACTIVITY_ITEM_INTENT_OBJECT)) {
-            return getExtraFromParcelable(
-                intent,
-                MainActivity.MAIN_ACTIVITY_ITEM_INTENT_OBJECT
-            ) ?: Item(-1, "", "")
-        } else if (intent.hasExtra(MainActivity.MAIN_ACTIVITY_ITEM_INTENT_ID)) {
-
-            finishIntentStatus = SECOND_ACTIVITY_ITEM_INTENT_RETURN_NEW
-            return Item(
-                intent.getIntExtra(MainActivity.MAIN_ACTIVITY_ITEM_INTENT_ID, -1),
-                "", ""
-            )
-        } else {
-            finishIntentStatus = RESULT_CANCELED
-            return Item(-1, "", "")
-        }
-    }
+    private fun getIntentExtra() =
+        intent.getIntExtra(MainActivity.MAIN_ACTIVITY_ITEM_INTENT_ID, -1)
 
 //    private fun getExtraFromParcelable(result: Intent?) =
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

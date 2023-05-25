@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".mainactivity.MainActivity">
 
     <data>
 
         <variable
             name="mainActivity"
-            type="lt.vgrabauskas.androidtopics.MainActivity" />
+            type="lt.vgrabauskas.androidtopics.mainactivity.MainActivity" />
     </data>
 
     <RelativeLayout

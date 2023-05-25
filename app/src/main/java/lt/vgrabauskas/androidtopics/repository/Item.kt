@@ -1,4 +1,4 @@
-package lt.vgrabauskas.androidtopics
+package lt.vgrabauskas.androidtopics.repository
 
 
 

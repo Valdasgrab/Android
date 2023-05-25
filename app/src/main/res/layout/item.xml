@@ -3,7 +3,7 @@
     <data>
         <variable
             name="item"
-            type="lt.vgrabauskas.androidtopics.Item" />
+            type="lt.vgrabauskas.androidtopics.repository.Item" />
     </data>
 
     <LinearLayout
