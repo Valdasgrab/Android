@@ -20,6 +20,7 @@ class SecondActivity : ActivityLifecycles() {
         binding.secondActivity = this
 
         getIntentExtra()
+        // Comments just for merging purpose: commit02
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
