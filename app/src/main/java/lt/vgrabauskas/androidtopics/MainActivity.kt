@@ -31,6 +31,7 @@ class MainActivity : ActivityLifecycles() {
         updateAdapter(items)
 
         setClickOpenItemDetails()
+        // code from dev branch
     }
 
 
