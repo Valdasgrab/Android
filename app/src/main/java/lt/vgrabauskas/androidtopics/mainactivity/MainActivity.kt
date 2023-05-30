@@ -27,6 +27,8 @@ class MainActivity : ActivityLifecycles() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.mainActivity = this
+        binding.viewModel = activityViewModel
+        binding.lifecycleOwner = this
 
         setUpListView()
 
@@ -58,10 +60,10 @@ class MainActivity : ActivityLifecycles() {
             }
         )
 
-        activityViewModel.isLoadingLiveData.observe(this) { isLoading ->
-            binding.loadingProgressBar.isVisible = isLoading
-            binding.itemListView.isVisible = !isLoading
-        }
+//        activityViewModel.isLoadingLiveData.observe(this) { isLoading ->
+//            binding.loadingProgressBar.isVisible = isLoading
+//            binding.itemListView.isVisible = !isLoading
+//        }
     }
 
     private fun setClickOpenItemDetails() {
