@@ -29,7 +29,7 @@
             android:layout_marginTop="32dp"
             android:layout_marginRight="32dp"
             android:layout_marginBottom="96dp"
-            android:visibility="@{viewModel.isLoadingLiveData() ? View.GONE : View.VISIBLE}" />
+            android:visibility="@{viewModel.isLoadingStateFlow() ? View.GONE : View.VISIBLE}" />
 
         <ProgressBar
             android:id="@+id/loadingProgressBar"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:visibility="@{viewModel.isLoadingLiveData() ? View.VISIBLE : View.GONE}" />
+            android:visibility="@{viewModel.isLoadingStateFlow() ? View.VISIBLE : View.GONE}" />
 
         <Button
             android:id="@+id/openSecondActivityButton"

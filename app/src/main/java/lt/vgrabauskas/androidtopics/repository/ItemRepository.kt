@@ -34,24 +34,30 @@ class ItemRepository {
         }
     }
 
-    fun addDummyListOfItems() {
-        items.addAll(generateListOfItems())
-    }
-
-    private fun generateListOfItems(): List<Item> {
-        val list = mutableListOf<Item>()
-
-        for (number in 1..20) {
-            val item = Item(
-                number,
-                "dummy text01: $number",
-                "dummy text02: ${(1..100).random()}"
-            )
-            list.add(item)
+    suspend fun addDummyListOfItems() {
+        withContext(Dispatchers.IO) {
+            items.addAll(generateListOfItems())
         }
 
-        return list
     }
+
+    private suspend fun generateListOfItems() =
+        withContext(Dispatchers.IO) {
+
+            val list = mutableListOf<Item>()
+
+            for (number in 1..20) {
+                val item = Item(
+                    number,
+                    "dummy text01: $number",
+                    "dummy text02: ${(1..100).random()}"
+                )
+                list.add(item)
+            }
+
+            return@withContext list
+        }
+
 
     companion object {
         val instance: ItemRepository = ItemRepository()

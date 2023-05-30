@@ -3,16 +3,18 @@ package lt.vgrabauskas.androidtopics.mainactivity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import lt.vgrabauskas.androidtopics.ActivityLifecycles
 import lt.vgrabauskas.androidtopics.R
 import lt.vgrabauskas.androidtopics.secondactivity.SecondActivity
 import lt.vgrabauskas.androidtopics.databinding.ActivityMainBinding
-import lt.vgrabauskas.androidtopics.getExtraFromParcelable
 import lt.vgrabauskas.androidtopics.repository.Item
 
 class MainActivity : ActivityLifecycles() {
@@ -53,12 +55,20 @@ class MainActivity : ActivityLifecycles() {
     }
 
     private fun setUpObservables() {
-        activityViewModel.itemsLiveData.observe(
-            this,
-            Observer { listOfItems ->
-                adapter.add(listOfItems)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                activityViewModel.itemsStateFlow.collect{
+                    listOfItems -> adapter.add(listOfItems)
+                }
             }
-        )
+        }
+
+//        activityViewModel.itemsStateFlow.observe(
+//            this,
+//            Observer { listOfItems ->
+//                adapter.add(listOfItems)
+//            }
+//        )
 
 //        activityViewModel.isLoadingLiveData.observe(this) { isLoading ->
 //            binding.loadingProgressBar.isVisible = isLoading
