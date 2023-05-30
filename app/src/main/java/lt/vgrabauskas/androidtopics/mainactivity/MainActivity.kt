@@ -35,9 +35,13 @@ class MainActivity : ActivityLifecycles() {
                 adapter.add(listOfItems)
             }
         )
-        activityViewModel.fetchItems()
 
         setClickOpenItemDetails()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activityViewModel.fetchItems()
     }
 
     private fun setUpListView() {
@@ -61,8 +65,6 @@ class MainActivity : ActivityLifecycles() {
     }
 
     companion object {
-        const val MAIN_ACTIVITY_ITEM_INTENT_OBJECT =
-            "package lt.vgrabauskas.androidtopics_item_intent_onject"
         const val MAIN_ACTIVITY_ITEM_INTENT_ID =
             "package lt.vgrabauskas.androidtopics_item_intent_id"
     }

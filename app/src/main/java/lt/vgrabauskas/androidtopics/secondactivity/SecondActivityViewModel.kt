@@ -21,4 +21,16 @@ class SecondActivityViewModel : ViewModel() {
             }
         }
     }
+
+    fun saveItem(item: Item) {
+        if (item != null) {
+            if (item.id > 0) {
+                ItemRepository.instance.updateItem(item)
+            } else {
+                ItemRepository.instance.addItem(item)
+            }
+        }
+
+//        ItemRepository.instance.
+    }
 }
