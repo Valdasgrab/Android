@@ -1,11 +1,18 @@
 package lt.vgrabauskas.androidtopics.repository
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 class ItemRepository {
 
-    val items = mutableListOf<Item>()
+    private val items = mutableListOf<Item>()
 
     fun getItem(id: Int) = items.find { it.id == id }
+
+    suspend fun getItems() = withContext(Dispatchers.IO) {
+        items
+    }
 
     fun addItem(item: Item) {
         var newId = 1

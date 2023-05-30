@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import lt.vgrabauskas.androidtopics.ActivityLifecycles
@@ -29,19 +30,19 @@ class MainActivity : ActivityLifecycles() {
 
         setUpListView()
 
-        activityViewModel.itemsLiveData.observe(
-            this,
-            Observer { listOfItems ->
-                adapter.add(listOfItems)
-            }
-        )
+        setUpObservables()
 
         setClickOpenItemDetails()
     }
 
+
     override fun onResume() {
         super.onResume()
         activityViewModel.fetchItems()
+    }
+
+    fun onClickButtonOpenSecondActivity(view: View) {
+        startActivity(Intent(this, SecondActivity::class.java))
     }
 
     private fun setUpListView() {
@@ -49,8 +50,18 @@ class MainActivity : ActivityLifecycles() {
         binding.itemListView.adapter = adapter
     }
 
-    fun onClickButtonOpenSecondActivity(view: View) {
-        startActivity(Intent(this, SecondActivity::class.java))
+    private fun setUpObservables() {
+        activityViewModel.itemsLiveData.observe(
+            this,
+            Observer { listOfItems ->
+                adapter.add(listOfItems)
+            }
+        )
+
+        activityViewModel.isLoadingLiveData.observe(this) { isLoading ->
+            binding.loadingProgressBar.isVisible = isLoading
+            binding.itemListView.isVisible = !isLoading
+        }
     }
 
     private fun setClickOpenItemDetails() {
