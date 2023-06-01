@@ -1,5 +1,7 @@
 package lt.vgrabauskas.androidtopics.mainactivity
 
+import android.app.AlertDialog
+import android.content.ClipData
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -8,6 +10,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import lt.vgrabauskas.androidtopics.ActivityLifecycles
 import lt.vgrabauskas.androidtopics.R
@@ -34,7 +38,9 @@ class MainActivity : ActivityLifecycles() {
 
         setUpObservables()
 
+        onItemLongClick()
         setClickOpenItemDetails()
+
     }
 
 
@@ -55,23 +61,31 @@ class MainActivity : ActivityLifecycles() {
     private fun setUpObservables() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                activityViewModel.uiState.collect{
-                    uiState -> adapter.add(uiState.items)
+                activityViewModel.uiState.collect { uiState ->
+                    adapter.add(uiState.items)
                 }
             }
         }
 
-//        activityViewModel.itemsStateFlow.observe(
-//            this,
-//            Observer { listOfItems ->
-//                adapter.add(listOfItems)
-//            }
-//        )
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                activityViewModel.isDeletedUIState.collect { isDeleted ->
+                    if (isDeleted) {
+                        displaySnackBar("Item was removed from repository")
+                    } else {
+                        displaySnackBar("Item was not removed from repository")
+                    }
+                }
+            }
+        }
+    }
 
-//        activityViewModel.isLoadingLiveData.observe(this) { isLoading ->
-//            binding.loadingProgressBar.isVisible = isLoading
-//            binding.itemListView.isVisible = !isLoading
-//        }
+    private fun onItemLongClick() {
+        binding.itemListView.setOnItemLongClickListener { adapterView, view, position, l ->
+            val item = adapterView.getItemAtPosition(position) as Item
+            displayDeleteItemAlertDialog(item)
+            true
+        }
     }
 
     private fun setClickOpenItemDetails() {
@@ -83,6 +97,32 @@ class MainActivity : ActivityLifecycles() {
 
             startActivity(intent)
         }
+    }
+
+    private fun displayDeleteItemAlertDialog(item: Item) {
+        AlertDialog
+            .Builder(this)
+            .setTitle("Delete")
+            .setMessage("Would you like to delete the item?")
+            .setIcon(R.drawable.ic_clear_24)
+            .setPositiveButton("Yes") { _, _ ->
+                activityViewModel.deleteItem(item)
+                adapter.remove(item)
+//                displaySnackBar("Item was removed from repository")
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun displaySnackBar(message: String) {
+        Snackbar
+            .make(
+                binding.openSecondActivityButton,
+                message,
+                Snackbar.LENGTH_LONG
+            )
+            .setAnchorView(binding.openSecondActivityButton)
+            .show()
     }
 
     companion object {

@@ -1,5 +1,7 @@
 package lt.vgrabauskas.androidtopics.repository
 
+import android.app.AlertDialog
+import android.content.ClipData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -56,6 +58,11 @@ class ItemRepository {
             }
 
             return@withContext list
+        }
+
+    suspend fun deleteItem(item: Item) =
+        withContext(Dispatchers.IO) {
+            items.remove(item)
         }
 
 
