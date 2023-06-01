@@ -6,37 +6,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lt.vgrabauskas.androidtopics.repository.Item
 import lt.vgrabauskas.androidtopics.repository.ItemRepository
 
 class MainActivityViewModel : ViewModel() {
 
-    private val _itemsStateFlow = MutableStateFlow<List<Item>>(mutableListOf())
-    val itemsStateFlow = _itemsStateFlow.asStateFlow()
-
-
-    private val _isLoadingStateFlow = MutableStateFlow(true)
-    val isLoadingStateFlow = _isLoadingStateFlow.asStateFlow()
+    private val _uiState = MutableStateFlow(MainActivityUIState())
+    val uiState = _uiState.asStateFlow()
 
 
     fun fetchItems() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            _isLoadingStateFlow.value = true
+            _uiState.update {
+                it.copy(isLoading = true, isListVisible = false)
+            }
 
-            if (_itemsStateFlow.value.isEmpty()) {
+            if (_uiState.value.items.isEmpty()) {
                 ItemRepository.instance.addDummyListOfItems()
             }
 
             delay((1000..4000).random().toLong())
 
-            _itemsStateFlow.value = ItemRepository.instance.getItems()
-
-            _isLoadingStateFlow.value = false
+            _uiState.update {
+                it.copy(
+                    items = ItemRepository.instance.getItems(),
+                    isLoading = false,
+                    isListVisible = true)
+            }
         }
-
-
     }
-
 }
