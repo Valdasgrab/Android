@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -15,7 +16,8 @@ class MainActivityViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainActivityUIState())
     val uiState = _uiState.asStateFlow()
-    private val _isDeletedUIState = MutableStateFlow(false)
+
+    private val _isDeletedUIState = MutableSharedFlow<MessageDisplayUIState>(0)
     val isDeletedUIState = _isDeletedUIState
 
 
@@ -44,9 +46,16 @@ class MainActivityViewModel : ViewModel() {
 
     fun deleteItem(item: Item) {
         viewModelScope.launch(Dispatchers.IO) {
-            _isDeletedUIState.update {
-                ItemRepository.instance.deleteItem(item)
-            }
+            _isDeletedUIState.emit(
+                MessageDisplayUIState(
+                    item = item,
+                    isDeleted = ItemRepository.instance.deleteItem(item)
+                )
+            )
+//            ItemRepository.instance.deleteItem(Item(-100, "", "")))
+//            _isDeletedUIState.update {
+//                ItemRepository.instance.deleteItem(item)
+//            }
         }
     }
 }
