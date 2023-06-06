@@ -1,24 +1,30 @@
 package lt.vgrabauskas.androidtopics.mainactivity
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import lt.vgrabauskas.androidtopics.repository.Item
 import lt.vgrabauskas.androidtopics.repository.ItemRepository
 
-class MainActivityViewModel : ViewModel() {
+class MainActivityViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainActivityUIState())
     val uiState = _uiState.asStateFlow()
 
     private val _isDeletedUIState = MutableSharedFlow<MessageDisplayUIState>(0)
     val isDeletedUIState = _isDeletedUIState
+
+    val positionListViewStateFlow: StateFlow<Int> = state.getStateFlow(ITEM_POSITION_LIST_VIEW, -1)
+
+//    val positionListView = state.get<Int>(ITEM_POSITION_LIST_VIEW)
 
 
     fun fetchItems() {
@@ -57,6 +63,14 @@ class MainActivityViewModel : ViewModel() {
 //                ItemRepository.instance.deleteItem(item)
 //            }
         }
+    }
+
+    fun savePositionListView(position: Int) {
+        state[ITEM_POSITION_LIST_VIEW] = position
+    }
+
+    companion object {
+        const val ITEM_POSITION_LIST_VIEW = "lt.vgrabauskas.androidtopics.mainactivity.position.listview"
     }
 }
 
