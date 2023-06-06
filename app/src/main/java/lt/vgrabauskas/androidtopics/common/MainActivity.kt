@@ -1,7 +1,8 @@
-package lt.vgrabauskas.androidtopics
+package lt.vgrabauskas.androidtopics.common
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import lt.vgrabauskas.androidtopics.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
