@@ -1,10 +1,9 @@
 package lt.vgrabauskas.androidtopics.common
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import lt.vgrabauskas.androidtopics.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ActivityLifecyclesPresentation() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
