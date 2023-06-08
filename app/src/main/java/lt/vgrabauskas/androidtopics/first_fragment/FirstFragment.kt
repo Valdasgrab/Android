@@ -1,8 +1,6 @@
 package lt.vgrabauskas.androidtopics.first_fragment
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +8,7 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import lt.vgrabauskas.androidtopics.R
 import lt.vgrabauskas.androidtopics.common.FragmentLifecyclesPresentation
+import lt.vgrabauskas.androidtopics.common.MainActivity
 import lt.vgrabauskas.androidtopics.databinding.FragmentFirstBinding
 import lt.vgrabauskas.androidtopics.second_fragment.SecondFragment
 
@@ -42,18 +41,17 @@ class FirstFragment : FragmentLifecyclesPresentation() {
 
     private fun onClickOpenButton() {
         binding.openSecondFragmentButton.setOnClickListener {
-            parentFragmentManager.commit {
-                replace(
-                    R.id.fragmentContainerView,
-                    SecondFragment.newInstance(),
-                    "second_fragment"
-                )
-                setReorderingAllowed(true)
-            }
+//            val mainActivity = activity as MainActivity
+//            mainActivity.openFragment()
+            (activity as MainActivity).openFragment(
+                SecondFragment.newInstance(),
+                SecondFragment.TAG
+            )
         }
     }
 
     companion object {
+        const val TAG = "first_fragment"
         fun newInstance() = FirstFragment()
     }
 }
