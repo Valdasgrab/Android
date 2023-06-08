@@ -10,8 +10,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:text="First Fragment"
         android:textColor="#023047"
-        android:textSize="32dp"
-        android:text="First Fragment" />
+        android:textSize="32dp" />
+
+    <Button
+        android:id="@+id/openSecondFragmentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="32dp"
+        android:text="Open" />
+
 
 </FrameLayout>
